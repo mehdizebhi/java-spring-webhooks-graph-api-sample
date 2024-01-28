@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-package com.example.graphwebhook;
+package com.example.graphwebhook.util;
 
 import javax.annotation.Nonnull;
 

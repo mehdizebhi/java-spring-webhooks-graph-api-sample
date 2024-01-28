@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package com.example.graphwebhook;
+package com.example.graphwebhook.core;
 
 import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+
+import com.example.graphwebhook.util.Utilities;
 import com.microsoft.graph.authentication.IAuthenticationProvider;
 import org.springframework.lang.NonNull;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;

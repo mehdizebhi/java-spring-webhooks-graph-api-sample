@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package com.example.graphwebhook;
+package com.example.graphwebhook.controller;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -11,6 +11,14 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
+import com.example.graphwebhook.dto.NewChatMessageNotification;
+import com.example.graphwebhook.dto.NewMessageNotification;
+import com.example.graphwebhook.dto.SubscriptionRecord;
+import com.example.graphwebhook.service.CertificateStoreService;
+import com.example.graphwebhook.service.SubscriptionStoreService;
+import com.example.graphwebhook.util.GraphClientHelper;
+import com.example.graphwebhook.util.TokenHelper;
+import com.example.graphwebhook.util.Utilities;
 import com.microsoft.graph.logger.DefaultLogger;
 import com.microsoft.graph.models.ChangeNotification;
 import com.microsoft.graph.models.ChangeNotificationCollection;

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package com.example.graphwebhook;
+package com.example.graphwebhook.service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
