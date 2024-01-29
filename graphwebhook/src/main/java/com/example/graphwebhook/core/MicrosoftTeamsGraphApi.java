@@ -1,4 +1,4 @@
-package com.example.graphwebhook.service;
+package com.example.graphwebhook.core;
 
 import com.microsoft.graph.models.*;
 import com.microsoft.graph.requests.*;
@@ -6,6 +6,9 @@ import org.springframework.lang.NonNull;
 
 import java.util.Optional;
 
+/**
+ * Graph explore api: https://developer.microsoft.com/en-us/graph/graph-explorer
+ */
 public interface MicrosoftTeamsGraphApi {
 
     boolean createTeam(@NonNull String displayName, String description);

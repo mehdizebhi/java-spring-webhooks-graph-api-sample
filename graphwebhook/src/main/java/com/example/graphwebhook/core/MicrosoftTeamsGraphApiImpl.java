@@ -1,4 +1,4 @@
-package com.example.graphwebhook.service;
+package com.example.graphwebhook.core;
 
 import com.google.gson.JsonPrimitive;
 import com.microsoft.graph.models.*;
@@ -25,7 +25,7 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
         team.description = description;
 
         try {
-            graphClient.teams()
+            graphServiceClient.teams()
                     .buildRequest()
                     .post(team);
             return true;
@@ -38,7 +38,7 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public Optional<TeamCollectionPage> myJoinedTeams() {
         try {
-            TeamCollectionPage joinedTeams = graphClient.me().joinedTeams()
+            TeamCollectionPage joinedTeams = graphServiceClient.me().joinedTeams()
                     .buildRequest()
                     .get();
 
@@ -52,7 +52,7 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public Optional<ConversationMemberCollectionPage> membersOfATeam(String teamId) {
         try {
-            ConversationMemberCollectionPage members = graphClient.teams(teamId).members()
+            ConversationMemberCollectionPage members = graphServiceClient.teams(teamId).members()
                     .buildRequest()
                     .get();
 
@@ -66,7 +66,7 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public Optional<ChannelCollectionPage> channelsOfATeamWhichIAmMemberOf(String teamId) {
         try {
-            ChannelCollectionPage channels = graphClient.teams(teamId).channels()
+            ChannelCollectionPage channels = graphServiceClient.teams(teamId).channels()
                     .buildRequest()
                     .get();
 
@@ -80,7 +80,7 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public Optional<Channel> channelInfo(String teamId, String channelId) {
         try {
-            Channel channel = graphClient.teams(teamId).channels(channelId)
+            Channel channel = graphServiceClient.teams(teamId).channels(channelId)
                     .buildRequest()
                     .get();
 
@@ -98,52 +98,69 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
         channel.description = description;
 
         try {
-            graphClient.teams(teamId).channels()
+            graphServiceClient.teams(teamId).channels()
                     .buildRequest()
                     .post(channel);
             return true;
         } catch (Exception e) {
+            log.error("Can not create channel: ", e);
             return false;
         }
     }
 
     @Override
-    public TeamsAppInstallationCollectionPage appsInATeam(String teamId) {
-        TeamsAppInstallationCollectionPage installedApps = graphClient.teams(teamId).installedApps()
-                .buildRequest()
-                .expand("teamsAppDefinition")
-                .get();
+    public Optional<TeamsAppInstallationCollectionPage> appsInATeam(String teamId) {
+        try {
+            TeamsAppInstallationCollectionPage installedApps = graphServiceClient.teams(teamId).installedApps()
+                    .buildRequest()
+                    .expand("teamsAppDefinition")
+                    .get();
 
-        return installedApps;
+            return Optional.of(installedApps);
+        } catch (Exception e) {
+            log.error("Can not get apps in a team: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public TeamsTabCollectionPage tabsInAChannel(String teamId, String channelId) {
-        TeamsTabCollectionPage tabs = graphClient.teams(teamId).channels(channelId).tabs()
-                .buildRequest()
-                .expand("teamsApp")
-                .get();
+    public Optional<TeamsTabCollectionPage> tabsInAChannel(String teamId, String channelId) {
+        try {
+            TeamsTabCollectionPage tabs = graphServiceClient.teams(teamId).channels(channelId).tabs()
+                    .buildRequest()
+                    .expand("teamsApp")
+                    .get();
 
-        return tabs;
+            return Optional.of(tabs);
+        } catch (Exception e) {
+            log.error("Can not get tabs in a channel: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public DriveItemCollectionPage itemsInATeamDrive(String groupIdForTeams, String items) {
-        DriveItemCollectionPage children = graphClient.groups(groupIdForTeams).drive().items(items).children()
-                .buildRequest()
-                .get();
+    public Optional<DriveItemCollectionPage> itemsInATeamDrive(String groupIdForTeams, String items) {
+        try {
+            DriveItemCollectionPage children = graphServiceClient.groups(groupIdForTeams).drive().items(items).children()
+                    .buildRequest()
+                    .get();
 
-        return children;
+            return Optional.of(children);
+        } catch (Exception e) {
+            log.error("Can not get items in a team drive: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean createChat(Chat chat) {
         try {
-            graphClient.chats()
+            graphServiceClient.chats()
                     .buildRequest()
                     .post(chat);
             return true;
         } catch (Exception e) {
+            log.error("Can not create chat: ", e);
             return false;
         }
     }
@@ -156,7 +173,7 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
         chatMessage.body = body;
 
         try {
-            graphClient.teams(teamId).channels(channelId).messages()
+            graphServiceClient.teams(teamId).channels(channelId).messages()
                     .buildRequest()
                     .post(chatMessage);
             return true;
@@ -167,31 +184,42 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     }
 
     @Override
-    public TeamworkTagCollectionPage getTagsInATeam(String teamId) {
-        TeamworkTagCollectionPage tags = graphClient.teams(teamId).tags()
-                .buildRequest()
-                .get();
+    public Optional<TeamworkTagCollectionPage> getTagsInATeam(String teamId) {
+        try {
+            TeamworkTagCollectionPage tags = graphServiceClient.teams(teamId).tags()
+                    .buildRequest()
+                    .get();
 
-        return tags;
+            return Optional.of(tags);
+        } catch (Exception e) {
+            log.error("Can not get tags in a team: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public TeamworkTag getASingleTagInATeam(String teamId, String teamworkTagId) {
-        TeamworkTag teamworkTag = graphClient.teams(teamId).tags(teamworkTagId)
-                .buildRequest()
-                .get();
+    public Optional<TeamworkTag> getASingleTagInATeam(String teamId, String teamworkTagId) {
+        try {
+            TeamworkTag teamworkTag = graphServiceClient.teams(teamId).tags(teamworkTagId)
+                    .buildRequest()
+                    .get();
 
-        return teamworkTag;
+            return Optional.of(teamworkTag);
+        } catch (Exception e) {
+            log.error("Can not get a single tag in a team: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean createATagInATeam(String teamId, TeamworkTag teamworkTag) {
         try {
-            graphClient.teams(teamId).tags()
+            graphServiceClient.teams(teamId).tags()
                     .buildRequest()
                     .post(teamworkTag);
             return true;
         } catch (Exception e) {
+            log.error("Can not create a tag in a team: ", e);
             return false;
         }
     }
@@ -199,11 +227,12 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public boolean updateATagInATeam(String teamId, String teamworkTagId, TeamworkTag teamworkTag) {
         try {
-            graphClient.teams(teamId).tags(teamworkTagId)
+            graphServiceClient.teams(teamId).tags(teamworkTagId)
                     .buildRequest()
                     .patch(teamworkTag);
             return true;
         } catch (Exception e) {
+            log.error("Can not update a tag in a team: ", e);
             return false;
         }
     }
@@ -211,31 +240,42 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public boolean deleteATagInATeam(String teamId, String teamworkTagId) {
         try {
-            graphClient.teams(teamId).tags(teamworkTagId)
+            graphServiceClient.teams(teamId).tags(teamworkTagId)
                     .buildRequest()
                     .delete();
             return true;
         } catch (Exception e) {
+            log.error("Can not delete a tag in a team: ", e);
             return false;
         }
     }
 
     @Override
-    public TeamworkTagMemberCollectionPage getsAllMembersOfATagInATeam(String teamId, String teamworkTagId) {
-        TeamworkTagMemberCollectionPage members = graphClient.teams(teamId).tags(teamworkTagId).members()
-                .buildRequest()
-                .get();
+    public Optional<TeamworkTagMemberCollectionPage> getsAllMembersOfATagInATeam(String teamId, String teamworkTagId) {
+        try {
+            TeamworkTagMemberCollectionPage members = graphServiceClient.teams(teamId).tags(teamworkTagId).members()
+                    .buildRequest()
+                    .get();
 
-        return members;
+            return Optional.of(members);
+        } catch (Exception e) {
+            log.error("Can not get all members of a tag in a team: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public TeamworkTagMember getASingleMemberFromATagInATeam(String teamId, String teamworkTagId, String teamworkTagMemberId) {
-        TeamworkTagMember teamworkTagMember = graphClient.teams(teamId).tags(teamworkTagId).members(teamworkTagMemberId)
-                .buildRequest()
-                .get();
+    public Optional<TeamworkTagMember> getASingleMemberFromATagInATeam(String teamId, String teamworkTagId, String teamworkTagMemberId) {
+        try {
+            TeamworkTagMember teamworkTagMember = graphServiceClient.teams(teamId).tags(teamworkTagId).members(teamworkTagMemberId)
+                    .buildRequest()
+                    .get();
 
-        return teamworkTagMember;
+            return Optional.of(teamworkTagMember);
+        } catch (Exception e) {
+            log.error("Can not get a single member from a tag in a team: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -244,11 +284,12 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
         teamworkTagMember.userId = userId;
 
         try {
-            graphClient.teams(teamId).tags(teamworkTagId).members()
+            graphServiceClient.teams(teamId).tags(teamworkTagId).members()
                     .buildRequest()
                     .post(teamworkTagMember);
             return true;
         } catch (Exception e) {
+            log.error("Can not adds a member to a tag in a team: ", e);
             return false;
         }
     }
@@ -256,11 +297,12 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     @Override
     public boolean deleteAMemberFromATagInATeam(String teamId, String teamworkTagId, String teamworkTagMemberId) {
         try {
-            graphClient.teams(teamId).tags(teamworkTagId).members(teamworkTagMemberId)
+            graphServiceClient.teams(teamId).tags(teamworkTagId).members(teamworkTagMemberId)
                     .buildRequest()
                     .delete();
             return true;
         } catch (Exception e) {
+            log.error("Can not delete a member from a tag in a team: ", e);
             return false;
         }
     }
@@ -270,66 +312,101 @@ public class MicrosoftTeamsGraphApiImpl implements MicrosoftTeamsGraphApi {
     // -----------------------------------------------------
 
     @Override
-    public ChatMessageCollectionPage messagesInAChannelWithoutReplies(String groupIdForTeams, String channelId) {
-        ChatMessageCollectionPage messages = graphClient.teams(groupIdForTeams).channels(channelId).messages()
-                .buildRequest()
-                .get();
+    public Optional<ChatMessageCollectionPage> messagesInAChannelWithoutReplies(String groupIdForTeams, String channelId) {
+        try {
+            ChatMessageCollectionPage messages = graphServiceClient.teams(groupIdForTeams).channels(channelId).messages()
+                    .buildRequest()
+                    .get();
 
-        return messages;
+            return Optional.of(messages);
+        } catch (Exception e) {
+            log.error("Can not get messages in a channel without replies: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public ChatMessage messageInAChannel(String groupIdForTeams, String channelId, String messageId) {
-        ChatMessage chatMessage = graphClient.teams(groupIdForTeams).channels(channelId).messages(messageId)
-                .buildRequest()
-                .get();
+    public Optional<ChatMessage> messageInAChannel(String groupIdForTeams, String channelId, String messageId) {
+        try {
+            ChatMessage chatMessage = graphServiceClient.teams(groupIdForTeams).channels(channelId).messages(messageId)
+                    .buildRequest()
+                    .get();
 
-        return chatMessage;
+            return Optional.of(chatMessage);
+        } catch (Exception e) {
+            log.error("Can not get messages in a channel: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public ChatMessageCollectionPage repliesToAMessageInChannel(String groupIdForTeams, String channelId, String messageId) {
-        ChatMessageCollectionPage replies = graphClient.teams(groupIdForTeams).channels(channelId).messages(messageId).replies()
-                .buildRequest()
-                .get();
+    public Optional<ChatMessageCollectionPage> repliesToAMessageInChannel(String groupIdForTeams, String channelId, String messageId) {
+        try {
+            ChatMessageCollectionPage replies = graphServiceClient.teams(groupIdForTeams).channels(channelId).messages(messageId).replies()
+                    .buildRequest()
+                    .get();
 
-        return replies;
+            return Optional.of(replies);
+        } catch (Exception e) {
+            log.error("Can not get replies to a message in channel: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public ChatMessage replyOfAMessage(String groupIdForTeams, String channelId, String messageId, String replyId) {
-        ChatMessage chatMessage = graphClient.teams(groupIdForTeams).channels(channelId).messages(messageId).replies(replyId)
-                .buildRequest()
-                .get();
+    public Optional<ChatMessage> replyOfAMessage(String groupIdForTeams, String channelId, String messageId, String replyId) {
+        try {
+            ChatMessage chatMessage = graphServiceClient.teams(groupIdForTeams).channels(channelId).messages(messageId).replies(replyId)
+                    .buildRequest()
+                    .get();
 
-        return chatMessage;
+            return Optional.of(chatMessage);
+        } catch (Exception e) {
+            log.error("Can not get reply of a message: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public UserScopeTeamsAppInstallationCollectionPage appsInstalledForUser() {
-        UserScopeTeamsAppInstallationCollectionPage installedApps = graphClient.me().teamwork().installedApps()
-                .buildRequest()
-                .expand("teamsApp")
-                .get();
+    public Optional<UserScopeTeamsAppInstallationCollectionPage> appsInstalledForUser() {
+        try {
+            UserScopeTeamsAppInstallationCollectionPage installedApps = graphServiceClient.me().teamwork().installedApps()
+                    .buildRequest()
+                    .expand("teamsApp")
+                    .get();
 
-        return installedApps;
+            return Optional.of(installedApps);
+        } catch (Exception e) {
+            log.error("Can not get apps installed for user: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public ConversationMemberCollectionPage listMembersOfAChat(String chatId) {
-        ConversationMemberCollectionPage members = graphClient.chats(chatId).members()
-                .buildRequest()
-                .get();
+    public Optional<ConversationMemberCollectionPage> listMembersOfAChat(String chatId) {
+        try {
+            ConversationMemberCollectionPage members = graphServiceClient.chats(chatId).members()
+                    .buildRequest()
+                    .get();
 
-        return members;
+            return Optional.of(members);
+        } catch (Exception e) {
+            log.error("Can not get list of members of a chat: ", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public ConversationMember memberInAChat(String chatId, String membershipId) {
-        ConversationMember conversationMember = graphClient.chats(chatId).members(membershipId)
-                .buildRequest()
-                .get();
+    public Optional<ConversationMember> memberInAChat(String chatId, String membershipId) {
+        try {
+            ConversationMember conversationMember = graphServiceClient.chats(chatId).members(membershipId)
+                    .buildRequest()
+                    .get();
 
-        return conversationMember;
+            return Optional.of(conversationMember);
+        } catch (Exception e) {
+            log.error("Can not get member in a chat: ", e);
+            return Optional.empty();
+        }
     }
 }
