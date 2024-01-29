@@ -21,21 +21,4 @@ public class ProfileController {
         Object user = GraphClientHelper.getGraphClient(oauthClient).me().buildRequest().get();
         return ResponseEntity.ok(user);
     }
-
-    @GetMapping("/send")
-    public ResponseEntity<Object> sendMessage(
-            @RegisteredOAuth2AuthorizedClient("graph") OAuth2AuthorizedClient oauthClient) {
-
-
-        ChatMessage chatMessage = new ChatMessage();
-        ItemBody body = new ItemBody();
-        body.content = "Message Sent By Microsoft Teams Bot";
-        chatMessage.body = body;
-
-        Object user = GraphClientHelper.getGraphClient(oauthClient).teams("933db7b3-4c3e-4ad1-acec-c5011dbea87b")
-                .channels("19:4db0361697c74095934dd76b030b6c7a@thread.tacv2").messages()
-                .buildRequest()
-                .post(chatMessage);
-        return ResponseEntity.ok(user);
-    }
 }

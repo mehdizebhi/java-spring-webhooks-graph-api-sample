@@ -3,7 +3,6 @@
 
 package com.example.graphwebhook.core;
 
-import com.example.graphwebhook.core.SpringOAuth2AuthProvider;
 import com.microsoft.graph.logger.DefaultLogger;
 import com.microsoft.graph.logger.LoggerLevel;
 import com.microsoft.graph.requests.GraphServiceClient;

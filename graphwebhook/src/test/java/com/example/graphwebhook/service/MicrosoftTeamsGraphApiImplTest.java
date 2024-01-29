@@ -17,8 +17,8 @@ class MicrosoftTeamsGraphApiImplTest {
 
     private @Autowired MicrosoftTeamsGraphApi graphApi;
     public DefaultSerializer serializer;
-    private final static String TEAM_ID = "";
-    private final static String CHANNEL_ID = "";
+    private final static String TEAM_ID = "933db7b3-4c3e-4ad1-acec-c5011dbea87b";
+    private final static String CHANNEL_ID = "19:4db0361697c74095934dd76b030b6c7a@thread.tacv2";
 
     @BeforeEach
     public void setUp() {
