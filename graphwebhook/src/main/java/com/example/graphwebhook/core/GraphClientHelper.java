@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package com.example.graphwebhook.util;
+package com.example.graphwebhook.core;
 
 import com.example.graphwebhook.core.SpringOAuth2AuthProvider;
 import com.microsoft.graph.logger.DefaultLogger;

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import com.example.graphwebhook.service.CertificateStoreService;
 import com.example.graphwebhook.service.SubscriptionStoreService;
-import com.example.graphwebhook.util.GraphClientHelper;
+import com.example.graphwebhook.core.GraphClientHelper;
 import com.example.graphwebhook.util.Utilities;
 import com.microsoft.graph.models.ChangeType;
 import com.microsoft.graph.models.Subscription;
